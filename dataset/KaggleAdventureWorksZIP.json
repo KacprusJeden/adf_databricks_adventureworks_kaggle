@@ -1,0 +1,21 @@
+{
+	"name": "KaggleAdventureWorksZIP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "KaggleAdventureWorksAPI",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "https://www.kaggle.com/api/v1/datasets/download/algorismus/adventure-works-in-excel-tables"
+			},
+			"compression": {
+				"type": "ZipDeflate",
+				"level": "Optimal"
+			}
+		}
+	}
+}
