@@ -102,8 +102,183 @@
 						"enablePartitionDiscovery": false
 					}
 				}
+			},
+			{
+				"name": "ForEachFiles",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "set_v_folder_source",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('get_files_adventureworkskaggle_zipfolder').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "adventureworkskaggleCSV_dynamic_source",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_source_file": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "adventureworkskaggleCSV_dynamic_sink",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_sink_folder": "@null",
+										"p_sink_file": "@item().name"
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "get_files_adventureworkskaggle_zipfolder",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "DownloadKaggleAdventureWorks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "adventureworkskaggleCSV_dynamic_source",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_source_folder": {
+								"value": "@concat(pipeline().parameters.p_source_folder, '/', activity('DownloadKaggleAdventureWorks').output.childItems[0].name)",
+								"type": "Expression"
+							},
+							"p_source_file": {
+								"value": "@null",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "set_v_folder_source",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "get_files_adventureworkskaggle_zipfolder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "v_folder_source",
+					"value": {
+						"value": "@concat(pipeline().parameters.p_source_folder, '/', activity('get_files_adventureworkskaggle_zipfolder').output.childItems[0].name)",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"concurrency": 4,
+		"parameters": {
+			"p_source_folder": {
+				"type": "string",
+				"defaultValue": "adventureworkskaggle"
+			}
+		},
+		"variables": {
+			"xyz": {
+				"type": "String"
+			},
+			"v_folder_source": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
