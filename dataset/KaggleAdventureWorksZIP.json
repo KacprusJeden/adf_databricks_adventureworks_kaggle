@@ -9,8 +9,7 @@
 		"type": "Binary",
 		"typeProperties": {
 			"location": {
-				"type": "HttpServerLocation",
-				"relativeUrl": "https://www.kaggle.com/api/v1/datasets/download/algorismus/adventure-works-in-excel-tables"
+				"type": "HttpServerLocation"
 			},
 			"compression": {
 				"type": "ZipDeflate",
