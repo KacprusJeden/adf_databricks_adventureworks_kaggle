@@ -1,0 +1,12 @@
+{
+	"name": "KaggleAdventureWorksAPI",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://www.kaggle.com/api/v1/datasets/download/algorismus/adventure-works-in-excel-tables",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
