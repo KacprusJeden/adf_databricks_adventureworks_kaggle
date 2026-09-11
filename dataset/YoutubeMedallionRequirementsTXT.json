@@ -1,0 +1,18 @@
+{
+	"name": "YoutubeMedallionRequirementsTXT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GitRaw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "KacprusJeden/Youtube-medallion-architecture-project/refs/heads/main/requirements.txt"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

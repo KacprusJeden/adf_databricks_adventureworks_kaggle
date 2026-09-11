@@ -1,0 +1,15 @@
+{
+	"name": "adf-kacprusjeden-swec-001",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "swedencentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f72ead19-3699-4f13-bf91-acac13af1fab",
+		"tenantId": "7d43cca4-5dfd-4267-bcf3-6958d1145650"
+	}
+}

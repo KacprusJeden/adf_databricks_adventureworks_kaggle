@@ -1,0 +1,124 @@
+{
+	"name": "TransformJSON",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "source_books_1",
+						"type": "DatasetReference"
+					},
+					"name": "sourceJSON"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "destination",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "destination",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          asin as string,",
+				"          ISBN10 as string,",
+				"          answered_questions as integer,",
+				"          availability as string,",
+				"          brand as string,",
+				"          currency as string,",
+				"          date_first_available as string,",
+				"          delivery as string[],",
+				"          department as string,",
+				"          description as string,",
+				"          discount as double,",
+				"          domain as string,",
+				"          features as string[],",
+				"          final_price as double,",
+				"          format as (name as string, price as string, url as string)[],",
+				"          image_url as string,",
+				"          images_count as string,",
+				"          initial_price as double,",
+				"          item_weight as string,",
+				"          manufacturer as string,",
+				"          model_number as string,",
+				"          plus_content as boolean,",
+				"          product_dimensions as string,",
+				"          rating as string,",
+				"          reviews_count as integer,",
+				"          root_bs_rank as integer,",
+				"          seller_id as string,",
+				"          seller_name as string,",
+				"          timestamp as string,",
+				"          title as string,",
+				"          upc as string,",
+				"          url as string,",
+				"          video as boolean,",
+				"          video_count as integer,",
+				"          categories as string[],",
+				"          best_sellers_rank as (category as string, rank as integer)[],",
+				"          buybox_seller as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> sourceJSON",
+				"sourceJSON select(mapColumn(",
+				"          brand",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(brand),",
+				"     brand_name = first(brand),",
+				"     partitionBy('roundRobin', 2)) ~> aggregate1",
+				"aggregate1 select(mapColumn(",
+				"          brand",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"sourceJSON filter(initial_price >= 12.99) ~> filter1",
+				"filter1 alterRow(updateIf(discount<5)) ~> alterRow1",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
+			]
+		}
+	}
+}
