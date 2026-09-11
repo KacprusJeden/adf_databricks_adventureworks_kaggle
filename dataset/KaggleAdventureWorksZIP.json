@@ -13,7 +13,7 @@
 			},
 			"compression": {
 				"type": "ZipDeflate",
-				"level": "Optimal"
+				"level": "Fastest"
 			}
 		}
 	}
