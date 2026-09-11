@@ -7,7 +7,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Delete1",
+						"activity": "TruncateAdventureWorksKaggle",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -39,10 +39,24 @@
 						"type": "BinarySink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"copyBehavior": "PreserveHierarchy"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "storageaccountswec001",
+								"type": "LinkedServiceReference"
+							},
+							"path": "metadata"
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -58,7 +72,7 @@
 				]
 			},
 			{
-				"name": "Delete1",
+				"name": "TruncateAdventureWorksKaggle",
 				"type": "Delete",
 				"dependsOn": [],
 				"policy": {
@@ -73,6 +87,13 @@
 					"dataset": {
 						"referenceName": "adventureworkskaggle",
 						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "storageaccountswec001",
+							"type": "LinkedServiceReference"
+						},
+						"path": "metadata"
 					},
 					"enableLogging": true,
 					"storeSettings": {
