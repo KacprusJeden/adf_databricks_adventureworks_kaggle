@@ -28,16 +28,11 @@
 				},
 				"fileSystem": "bronze"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "\t",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"quoteChar": ""
 		},
-		"schema": [
-			{
-				"name": "ProductKey\tProduct\tStandard Cost\tColor\tSubcategory\tCategory\tBackground Color Format\tFont Color Format",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }
