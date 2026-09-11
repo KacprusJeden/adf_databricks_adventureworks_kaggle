@@ -266,7 +266,7 @@
 				"typeProperties": {
 					"variableName": "v_folder_source",
 					"value": {
-						"value": "@concat(pipeline().parameters.p_source_folder, '/', activity('get_files_adventureworkskaggle_zipfolder').output.childItems[0].name)",
+						"value": "@concat(pipeline().parameters.p_source_folder, '/', activity('get_adventureworkskaggle_zipfolder').output.childItems[0].name)",
 						"type": "Expression"
 					}
 				}
