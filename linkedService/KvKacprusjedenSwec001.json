@@ -1,0 +1,10 @@
+{
+	"name": "KvKacprusjedenSwec001",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kv-kacprusjeden-swec-001.vault.azure.net/"
+		}
+	}
+}
