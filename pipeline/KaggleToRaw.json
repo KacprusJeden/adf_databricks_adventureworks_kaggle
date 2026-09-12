@@ -60,7 +60,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "KaggleAdventureWorksZIP",
+						"referenceName": "KaggleAdventureWorksApiZip",
 						"type": "DatasetReference"
 					}
 				],
