@@ -104,104 +104,6 @@
 				}
 			},
 			{
-				"name": "ForEachFiles",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "get_files_adventureworkskaggle_zipfolder",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('get_files_adventureworkskaggle_zipfolder').output.childItems",
-						"type": "Expression"
-					},
-					"isSequential": true,
-					"activities": [
-						{
-							"name": "Copy data1",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "DelimitedTextSource",
-									"storeSettings": {
-										"type": "AzureBlobFSReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
-									}
-								},
-								"sink": {
-									"type": "DelimitedTextSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings",
-										"copyBehavior": "PreserveHierarchy"
-									},
-									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "adventureworkskaggleCSV_dynamic_source",
-									"type": "DatasetReference",
-									"parameters": {
-										"p_source_folder": {
-											"value": "@variables('v_folder_source')",
-											"type": "Expression"
-										},
-										"p_source_file": {
-											"value": "@item().name",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "adventureworkskaggleCSV_dynamic_sink",
-									"type": "DatasetReference",
-									"parameters": {
-										"p_sink_folder": {
-											"value": "@pipeline().parameters.p_source_folder",
-											"type": "Expression"
-										},
-										"p_sink_file": "@item().name"
-									}
-								}
-							]
-						}
-					]
-				}
-			},
-			{
 				"name": "get_adventureworkskaggle_zipfolder",
 				"type": "GetMetadata",
 				"dependsOn": [
@@ -249,7 +151,7 @@
 				}
 			},
 			{
-				"name": "set_v_folder_source",
+				"name": "set_v_folder_bronze",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -265,19 +167,43 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "v_folder_source",
+					"variableName": "v_folder_bronze",
 					"value": {
-						"value": "@concat(pipeline().parameters.p_source_folder, '/', activity('get_adventureworkskaggle_zipfolder').output.childItems[0].name)",
+						"value": "@concat('abfss://bronze@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/', activity('get_adventureworkskaggle_zipfolder').output.childItems[0].name, '/')",
 						"type": "Expression"
 					}
 				}
 			},
 			{
-				"name": "get_files_adventureworkskaggle_zipfolder",
-				"type": "GetMetadata",
+				"name": "set_v_folder_silver",
+				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "set_v_folder_source",
+						"activity": "set_v_folder_bronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "v_folder_silver",
+					"value": {
+						"value": "@concat('abfss://silver@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "load_silver",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "set_v_folder_silver",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -292,31 +218,21 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
-						"referenceName": "adventureworkskaggleCSV_dynamic_source",
-						"type": "DatasetReference",
-						"parameters": {
-							"p_source_folder": {
-								"value": "@variables('v_folder_source')",
-								"type": "Expression"
-							},
-							"p_source_file": {
-								"value": "@null",
-								"type": "Expression"
-							}
+					"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/silver",
+					"baseParameters": {
+						"p_folder_bronze": {
+							"value": "@variables('v_folder_bronze')",
+							"type": "Expression"
+						},
+						"p_folder_silver": {
+							"value": "@variables('v_folder_silver')",
+							"type": "Expression"
 						}
-					},
-					"fieldList": [
-						"childItems"
-					],
-					"storeSettings": {
-						"type": "AzureBlobFSReadSettings",
-						"recursive": true,
-						"enablePartitionDiscovery": false
-					},
-					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
 					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
@@ -328,10 +244,13 @@
 			}
 		},
 		"variables": {
-			"xyz": {
+			"v_folder_bronze": {
 				"type": "String"
 			},
-			"v_folder_source": {
+			"v_folder_silver": {
+				"type": "String"
+			},
+			"v_folder_gold": {
 				"type": "String"
 			}
 		},
