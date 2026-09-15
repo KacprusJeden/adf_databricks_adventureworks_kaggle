@@ -1,0 +1,24 @@
+{
+	"name": "synapsedb_kjeden",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDW",
+		"typeProperties": {
+			"server": "workspacesynapseswec001-ondemand.sql.azuresynapse.net",
+			"database": "synapsedb_kjeden",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "kjedentech",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KvKacprusjedenSwec001",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "synapse-kjedentech",
+				"secretVersion": "50a0451bea4c4d22bc95e5766f111ed8"
+			}
+		}
+	}
+}
