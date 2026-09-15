@@ -7,7 +7,7 @@
 			"server": "workspacesynapseswec001-ondemand.sql.azuresynapse.net",
 			"database": "synapsedb_kjeden",
 			"encrypt": "mandatory",
-			"trustServerCertificate": false,
+			"trustServerCertificate": true,
 			"authenticationType": "SQL",
 			"userName": "kjedentech",
 			"password": {
@@ -16,8 +16,8 @@
 					"referenceName": "KvKacprusjedenSwec001",
 					"type": "LinkedServiceReference"
 				},
-				"secretName": "synapse-kjedentech",
-				"secretVersion": "50a0451bea4c4d22bc95e5766f111ed8"
+				"secretName": "synapse-kjedentech-password",
+				"secretVersion": "0b1ae82463544d37931adaecdd5a0c78"
 			}
 		}
 	}
