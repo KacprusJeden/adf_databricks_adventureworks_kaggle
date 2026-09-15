@@ -1,0 +1,35 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Notebook1",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"p_folder_silver": {
+				"type": "string",
+				"defaultValue": "abfss://silver@storageaccountswec001.dfs.core.windows.net/adventureworkskaggle/"
+			},
+			"p_folder_gold": {
+				"type": "string",
+				"defaultValue": "abfss://gold@storageaccountswec001.dfs.core.windows.net/adventureworkskaggle/"
+			}
+		},
+		"annotations": []
+	}
+}
