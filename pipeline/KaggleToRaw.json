@@ -241,6 +241,10 @@
 			"p_source_folder": {
 				"type": "string",
 				"defaultValue": "adventureworkskaggle"
+			},
+			"p_start_layer": {
+				"type": "string",
+				"defaultValue": "bronze"
 			}
 		},
 		"variables": {
