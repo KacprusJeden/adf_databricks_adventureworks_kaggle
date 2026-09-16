@@ -14,6 +14,19 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/gold 2026-09-15 20:36:17",
+					"baseParameters": {
+						"p_folder_silver": {
+							"value": "@pipeline().parameters.p_folder_silver",
+							"type": "Expression"
+						},
+						"p_folder_gold": {
+							"value": "@pipeline().parameters.p_folder_gold",
+							"type": "Expression"
+						}
+					}
+				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricks",
 					"type": "LinkedServiceReference"
