@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/gold 2026-09-15 20:36:17",
+					"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/gold",
 					"baseParameters": {
 						"p_folder_silver": {
 							"value": "@pipeline().parameters.p_folder_silver",
