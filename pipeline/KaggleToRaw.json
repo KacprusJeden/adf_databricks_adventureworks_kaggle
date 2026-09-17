@@ -203,7 +203,7 @@
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
-						"activity": "set_v_folder_silver",
+						"activity": "set_v_folder_gold",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -234,6 +234,67 @@
 					"referenceName": "AzureDatabricks",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "load_gold",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "load_silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/gold",
+					"baseParameters": {
+						"p_folder_silver": {
+							"value": "@variables('v_folder_silver')",
+							"type": "Expression"
+						},
+						"p_folder_gold": {
+							"value": "@variables('v_folder_gold')",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "set_v_folder_gold",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_v_folder_silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "v_folder_gold",
+					"value": {
+						"value": "@concat('abfss://gold@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"concurrency": 4,
@@ -245,6 +306,10 @@
 			"p_start_layer": {
 				"type": "string",
 				"defaultValue": "bronze"
+			},
+			"p_stop_layer": {
+				"type": "string",
+				"defaultValue": "gold"
 			}
 		},
 		"variables": {
