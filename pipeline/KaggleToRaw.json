@@ -179,7 +179,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "set_v_folder_bronze",
+						"activity": "if_start_layer_is_bronze",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -201,14 +201,7 @@
 			{
 				"name": "load_silver",
 				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "set_v_folder_gold",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -520,11 +513,11 @@
 				}
 			},
 			{
-				"name": "if_end_layer_or_start_layer_is_silver",
+				"name": "if_end_layer_or_start_layer_is_silver_or_all",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "if_start_layer_is_bronze",
+						"activity": "set_v_folder_gold",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -533,9 +526,136 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "",
+						"value": "@or(equals(pipeline().parameters.p_start_layer, 'silver'), or(equals(pipeline().parameters.p_stop_layer, 'silver'), and(equals(pipeline().parameters.p_start_layer, 'bronze'), equals(pipeline().parameters.p_stop_layer, 'gold'))))",
 						"type": "Expression"
-					}
+					},
+					"ifTrueActivities": [
+						{
+							"name": "get_adventureworkskaggle_zipfolder_copy1",
+							"type": "GetMetadata",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "adventureworkskaggleCSV_dynamic_source",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_source_folder": {
+											"value": "@pipeline().parameters.p_source_folder",
+											"type": "Expression"
+										},
+										"p_source_file": {
+											"value": "@null",
+											"type": "Expression"
+										}
+									}
+								},
+								"fieldList": [
+									"childItems"
+								],
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							}
+						},
+						{
+							"name": "set_v_folder_bronze_copy1",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "get_adventureworkskaggle_zipfolder_copy1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_folder_bronze",
+								"value": {
+									"value": "@concat('abfss://bronze@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/', activity('get_adventureworkskaggle_zipfolder').output.childItems[0].name, '/')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "set_v_folder_silver_copy1",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "set_v_folder_bronze_copy1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_folder_silver",
+								"value": {
+									"value": "@concat('abfss://silver@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "load_silver_copy1",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "set_v_folder_silver_copy1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/silver",
+								"baseParameters": {
+									"p_folder_bronze": {
+										"value": "@variables('v_folder_bronze')",
+										"type": "Expression"
+									},
+									"p_folder_silver": {
+										"value": "@variables('v_folder_silver')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
 				}
 			},
 			{
@@ -543,13 +663,19 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "if_end_layer_or_start_layer_is_silver",
+						"activity": "if_end_layer_or_start_layer_is_silver_or_all",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(contains(createArray('bronze', 'silver', 'gold'), pipeline().parameters.p_start_layer), equals(pipeline().parameters.p_stop_layer, 'gold'))",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"concurrency": 4,
