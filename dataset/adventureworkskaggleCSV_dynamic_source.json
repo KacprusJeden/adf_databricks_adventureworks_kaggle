@@ -1,0 +1,42 @@
+{
+	"name": "adventureworkskaggleCSV_dynamic_source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccountswec001",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"p_source_folder": {
+				"type": "String"
+			},
+			"p_source_file": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().p_source_file",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().p_source_folder",
+					"type": "Expression"
+				},
+				"fileSystem": "bronze"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			}
+		]
+	}
+}

@@ -1,0 +1,370 @@
+{
+	"name": "KaggleToRaw",
+	"properties": {
+		"activities": [
+			{
+				"name": "set_v_folder_silver",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "if_start_layer_is_bronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "v_folder_silver",
+					"value": {
+						"value": "@concat('abfss://silver@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_v_folder_gold",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set_v_folder_silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "v_folder_gold",
+					"value": {
+						"value": "@concat('abfss://gold@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "if_start_layer_is_bronze",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(pipeline().parameters.p_start_layer, 'bronze')",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "DownloadKaggleAdventureWorks",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "TruncateAdventureWorksKaggle",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings",
+										"compressionProperties": {
+											"type": "ZipDeflateReadSettings"
+										}
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": "PreserveHierarchy"
+									}
+								},
+								"enableStaging": false,
+								"logSettings": {
+									"enableCopyActivityLog": true,
+									"copyActivityLogSettings": {
+										"logLevel": "Warning",
+										"enableReliableLogging": false
+									},
+									"logLocationSettings": {
+										"linkedServiceName": {
+											"referenceName": "storageaccountswec001",
+											"type": "LinkedServiceReference"
+										},
+										"path": "metadata"
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "KaggleAdventureWorksApiZip",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "adventureworkskaggle",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "TruncateAdventureWorksKaggle",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "adventureworkskaggle",
+									"type": "DatasetReference"
+								},
+								"logStorageSettings": {
+									"linkedServiceName": {
+										"referenceName": "storageaccountswec001",
+										"type": "LinkedServiceReference"
+									},
+									"path": "metadata"
+								},
+								"enableLogging": true,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "if_end_layer_or_start_layer_is_silver_or_all",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "set_v_folder_gold",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(equals(pipeline().parameters.p_start_layer, 'silver'), or(equals(pipeline().parameters.p_stop_layer, 'silver'), and(equals(pipeline().parameters.p_start_layer, 'bronze'), equals(pipeline().parameters.p_stop_layer, 'gold'))))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "get_adventureworkskaggle_zipfolder",
+							"type": "GetMetadata",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "adventureworkskaggleCSV_dynamic_source",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_source_folder": {
+											"value": "@pipeline().parameters.p_source_folder",
+											"type": "Expression"
+										},
+										"p_source_file": {
+											"value": "@null",
+											"type": "Expression"
+										}
+									}
+								},
+								"fieldList": [
+									"childItems"
+								],
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							}
+						},
+						{
+							"name": "set_v_folder_bronze",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "get_adventureworkskaggle_zipfolder",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "v_folder_bronze",
+								"value": {
+									"value": "@concat('abfss://bronze@storageaccountswec001.dfs.core.windows.net/', pipeline().parameters.p_source_folder, '/', activity('get_adventureworkskaggle_zipfolder').output.childItems[0].name, '/')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "load_silver",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "set_v_folder_bronze",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/silver",
+								"baseParameters": {
+									"p_folder_bronze": {
+										"value": "@variables('v_folder_bronze')",
+										"type": "Expression"
+									},
+									"p_folder_silver": {
+										"value": "@variables('v_folder_silver')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "if_end_layer_or_start_layer_is_gold",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "if_end_layer_or_start_layer_is_silver_or_all",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(contains(createArray('bronze', 'silver', 'gold'), pipeline().parameters.p_start_layer), equals(pipeline().parameters.p_stop_layer, 'gold'))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "load_gold",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/kacper050710@outlook.com/dataflows/kaggle_dir/adventureworks/gold",
+								"baseParameters": {
+									"p_folder_silver": {
+										"value": "@variables('v_folder_silver')",
+										"type": "Expression"
+									},
+									"p_folder_gold": {
+										"value": "@variables('v_folder_gold')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"concurrency": 4,
+		"parameters": {
+			"p_source_folder": {
+				"type": "string",
+				"defaultValue": "adventureworkskaggle"
+			},
+			"p_start_layer": {
+				"type": "string",
+				"defaultValue": "bronze"
+			},
+			"p_stop_layer": {
+				"type": "string",
+				"defaultValue": "gold"
+			}
+		},
+		"variables": {
+			"v_folder_bronze": {
+				"type": "String"
+			},
+			"v_folder_silver": {
+				"type": "String"
+			},
+			"v_folder_gold": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}

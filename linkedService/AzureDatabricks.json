@@ -1,0 +1,20 @@
+{
+	"name": "AzureDatabricks",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-7405616644634907.7.azuredatabricks.net",
+			"accessToken": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KvKacprusjedenSwec001",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "cli2-databricks",
+				"secretVersion": "fa3a704bea3e4de1a85279ef3620eee3"
+			},
+			"existingClusterId": "0907-120836-jlbuja4g"
+		}
+	}
+}
