@@ -57,6 +57,7 @@ To standardowy układ repo zintegrowanego z ADF przez **Git configuration** (Man
 | Azure Data Factory | `adf-<twoj-alias>-<region>-001` (u autora: `adf-kacprusjeden-swec-001`) | orkiestracja pipeline'u |
 | Storage Account (ADLS Gen2) | `stadfawkaggle<region>001` | warstwy Bronze/Silver/Gold |
 | Azure Databricks Workspace | `dbw-adf-aw-kaggle-<region>-001` | uruchamianie notebooków transformacyjnych |
+| Azure Synapse (workspace + serverless database) | `workspacesynapseswec001` | tworzenie data martów i tabel zewnętrznych (external tables) na podstawie danych delta zapisanych w warstwie gold |
 | Databricks — cluster (single node wystarczy) | np. `standard_d4ds_v5` | compute pod notebooki |
 | Konto/token Kaggle | — | pobranie datasetu AdventureWorks przez Kaggle API |
 | *(opcjonalnie)* Azure Key Vault | `kv-adf-aw-kaggle-001` | bezpieczne przechowywanie tokenów/kluczy zamiast wpisywania ich wprost w linked service |
