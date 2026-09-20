@@ -113,5 +113,3 @@ To jest krok, o który pytałeś, i jest tu istotny problem strukturalny, o któ
 - **Klaster single-node** — wystarczy do notebooków transformacyjnych w tej skali danych, ale pamiętaj o ustawieniu auto-terminate, żeby nie płacić za bezczynny compute między uruchomieniami.
 
 ---
-
-*Uwaga: ta wersja README została przygotowana na podstawie widocznej struktury folderów repo — nie miałem dostępu do dokładnej zawartości plików `linkedService/*.json`/`dataset/*.json`. Jeśli wkleisz mi ich zawartość (bez wartości sekretów), doprecyzuję sekcję "Co trzeba podmienić" do stanu w 100% zgodnego z Twoją konfiguracją.*
