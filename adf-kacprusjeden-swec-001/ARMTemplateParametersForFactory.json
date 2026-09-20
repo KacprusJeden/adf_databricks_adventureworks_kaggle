@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-kacprusjeden-swec-001"
+		},
+		"storageaccountswec001_accountKey": {
+			"value": ""
+		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"value": "0907-120836-jlbuja4g"
+		},
+		"GitRaw_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"KaggleAdventureWorksAPI_properties_typeProperties_url": {
+			"value": "https://www.kaggle.com/api/v1/datasets/download/algorismus/adventure-works-in-excel-tables"
+		},
+		"KvKacprusjedenSwec001_properties_typeProperties_baseUrl": {
+			"value": "https://kv-kacprusjeden-swec-001.vault.azure.net/"
+		},
+		"storageaccountswec001_properties_typeProperties_url": {
+			"value": "https://storageaccountswec001.dfs.core.windows.net/"
+		},
+		"synapsedb_kjeden_properties_typeProperties_server": {
+			"value": "workspacesynapseswec001-ondemand.sql.azuresynapse.net"
+		},
+		"synapsedb_kjeden_properties_typeProperties_database": {
+			"value": "synapsedb_kjeden"
+		},
+		"synapsedb_kjeden_properties_typeProperties_userName": {
+			"value": "kjedentech"
+		}
+	}
+}

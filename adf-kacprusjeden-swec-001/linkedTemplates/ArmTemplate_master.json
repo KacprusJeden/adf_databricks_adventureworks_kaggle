@@ -1,0 +1,105 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Nazwa Data Factory",
+			"defaultValue": "adf-kacprusjeden-swec-001"
+		},
+		"storageaccountswec001_accountKey": {
+			"type": "secureString",
+			"metadata": "Bezpieczny ciąg dla elementu „accountKey” — „storageaccountswec001”"
+		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0907-120836-jlbuja4g"
+		},
+		"GitRaw_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"KaggleAdventureWorksAPI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.kaggle.com/api/v1/datasets/download/algorismus/adventure-works-in-excel-tables"
+		},
+		"KvKacprusjedenSwec001_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://kv-kacprusjeden-swec-001.vault.azure.net/"
+		},
+		"storageaccountswec001_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storageaccountswec001.dfs.core.windows.net/"
+		},
+		"synapsedb_kjeden_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "workspacesynapseswec001-ondemand.sql.azuresynapse.net"
+		},
+		"synapsedb_kjeden_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "synapsedb_kjeden"
+		},
+		"synapsedb_kjeden_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "kjedentech"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "Identyfikator URI konta magazynu zawierającego połączone szablony usługi ARM"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Token SAS dla konta magazynu zawierającego połączone szablony usługi ARM"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adf-kacprusjeden-swec-001_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"storageaccountswec001_accountKey": {
+						"value": "[parameters('storageaccountswec001_accountKey')]"
+					},
+					"GitRaw_properties_typeProperties_url": {
+						"value": "[parameters('GitRaw_properties_typeProperties_url')]"
+					},
+					"KaggleAdventureWorksAPI_properties_typeProperties_url": {
+						"value": "[parameters('KaggleAdventureWorksAPI_properties_typeProperties_url')]"
+					},
+					"KvKacprusjedenSwec001_properties_typeProperties_baseUrl": {
+						"value": "[parameters('KvKacprusjedenSwec001_properties_typeProperties_baseUrl')]"
+					},
+					"storageaccountswec001_properties_typeProperties_url": {
+						"value": "[parameters('storageaccountswec001_properties_typeProperties_url')]"
+					},
+					"AzureDatabricks_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks_properties_typeProperties_existingClusterId')]"
+					},
+					"synapsedb_kjeden_properties_typeProperties_server": {
+						"value": "[parameters('synapsedb_kjeden_properties_typeProperties_server')]"
+					},
+					"synapsedb_kjeden_properties_typeProperties_database": {
+						"value": "[parameters('synapsedb_kjeden_properties_typeProperties_database')]"
+					},
+					"synapsedb_kjeden_properties_typeProperties_userName": {
+						"value": "[parameters('synapsedb_kjeden_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
