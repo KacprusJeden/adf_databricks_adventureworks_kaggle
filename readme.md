@@ -67,11 +67,12 @@ To standardowy układ repo zintegrowanego z ADF przez **Git configuration** (Man
 1. **Utwórz Resource Group** i wszystkie zasoby z tabeli wyżej.
 2. **Sklonuj to repo** lokalnie lub podepnij bezpośrednio jako Git configuration nowej instancji ADF (Manage → Git configuration → wskaż to repo/branch `main`).
 3. **Skonfiguruj Linked Services** (`linkedService/*.json`) — zobacz sekcję niżej, co dokładnie podmienić.
-4. **Zaktualizuj Datasets** (`dataset/*.json`) — nazwy kontenerów/ścieżek storage, jeśli różnią się od Twoich.
-5. **Wgraj notebooki z `notebooks/`** do swojego Databricks workspace (przez Databricks CLI, `databricks workspace import`, albo przez Git folder w samym Databricksie).
-6. **Podmień ścieżki notebookowe w pipeline** — patrz sekcja niżej.
-7. **Publish** w ADF Studio (albo `Publish` przez Git jeśli masz ustawiony branch `adf_publish`).
-8. **Uruchom pipeline ręcznie (Debug/Trigger now)** i zweryfikuj każdą warstwę (Bronze → Silver → Gold) osobno, zanim ustawisz harmonogram.
+4. **Postaw bazę danych w Synapse** (synapse_script.sql) - wywołaj niniejszy skrypt w serveless (lub dedicated pool) Synapse
+5. **Zaktualizuj Datasets** (`dataset/*.json`) — nazwy kontenerów/ścieżek storage, jeśli różnią się od Twoich.
+6. **Wgraj notebooki z `notebooks/`** do swojego Databricks workspace (przez Databricks CLI, `databricks workspace import`, albo przez Git folder w samym Databricksie).
+7. **Podmień ścieżki notebookowe w pipeline** — patrz sekcja niżej.
+8. **Publish** w ADF Studio (albo `Publish` przez Git jeśli masz ustawiony branch `adf_publish`).
+9. **Uruchom pipeline ręcznie (Debug/Trigger now)** i zweryfikuj każdą warstwę (Bronze → Silver → Gold) osobno, zanim ustawisz harmonogram.
 
 ## Co trzeba podmienić
 
